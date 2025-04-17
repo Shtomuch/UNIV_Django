@@ -40,3 +40,17 @@ class Good(models.Model):
 
     def __str__(self):
         return self.name
+
+# Повідомлення
+class Notification(models.Model):
+    message = models.TextField()
+    status = models.CharField(max_length=51)
+
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    good = models.ForeignKey(Good, on_delete=models.CASCADE, related_name='notifications', null=True, blank=True)
+
+    def __str__(self):
+        return self.message
