@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
+
 class CustomUserTests(TestCase):
     def test_create_user(self):
         user = User.objects.create_user(username='testuser', password='testpass123', email='test@example.com')
