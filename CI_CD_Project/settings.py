@@ -31,7 +31,10 @@ SECRET_KEY = 'django-insecure-xsati*4k_ei1gkcs6z@%x=17rvj3@8+js)^9tzok&n*+v@#&)k
 DEBUG = True
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
-
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "DJANGO_CSRF_TRUSTED_ORIGINS",
+    "https://test.shtoma.top"
+).split(",")
 # Application definition
 
 INSTALLED_APPS = [
