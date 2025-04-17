@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
+
 class CustomUserTests(TestCase):
     def test_create_user(self):
         user = User.objects.create_user(username='testuser', password='testpass123', email='test@example.com')
@@ -135,3 +136,31 @@ class ViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'order.html')
 
+    def test_order_post_authenticated_user(self):
+        self.client.login(username='testuser', password='testpass')
+        session = self.client.session
+        session['cart'] = {str(self.good.id): 2}
+        session.save()
+
+        response = self.client.post(reverse('order'))
+        self.assertRedirects(response, reverse('profile'))
+        self.assertEqual(Order.objects.count(), 1)
+
+    def test_goods_by_category(self):
+        response = self.client.get(reverse('category_goods', args=[self.category.slug]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.good.name)
+
+    def test_category_list_view(self):
+        response = self.client.get(reverse('category_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.category.name)
+
+    def test_profile_requires_login(self):
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_profile_logged_in(self):
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
