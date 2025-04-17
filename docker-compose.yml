@@ -1,15 +1,24 @@
-version: "3.9"
-
 services:
   web:
-    build: .
+    image: ghcr.io/shtomuch/univ_django-web:latest
+    platform: linux/amd64
+    restart: unless-stopped
+
     ports:
       - "8000:8000"
 
+    environment:
+      # Супер‑юзер
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL:   admin@example.com
+      DJANGO_SUPERUSER_PASSWORD: admin123
+
+      # Хости, з яких приймаються запити (домен вашого сайту)
+      DJANGO_ALLOWED_HOSTS: test.shtoma.top,localhost,127.0.0.1
+
     volumes:
-      - .:/app:ro          # код лише на читання
-      - dbdata:/data       # RW‑том для SQLite
-      - media:/app/media   # медіафайли
+      - dbdata:/data
+      - media:/app/media
 
 volumes:
   dbdata:
