@@ -77,9 +77,10 @@ WSGI_APPLICATION = 'CI_CD_Project.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": Path("/data/db.sqlite3"),   # за межами коду
+        "NAME": Path("/data/db.sqlite3"),
     }
 }
+
 
 
 # Password validation

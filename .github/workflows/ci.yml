@@ -2,7 +2,7 @@ name: Django CI (Docker)
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
 
 jobs:
@@ -12,7 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # docker buildx -> multi‑platform кеш & —load
       - uses: docker/setup-buildx-action@v3
 
       - name: Build image (load into runner)
@@ -20,7 +19,7 @@ jobs:
         with:
           context: .
           tags: local/test-image:latest
-          load: true         # ← образ буде доступний команді docker run
+          load: true          # ← образ доступний docker run
 
       - name: Run migrations + tests
         run: |

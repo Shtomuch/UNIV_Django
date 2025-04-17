@@ -12,6 +12,9 @@ ENV PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=CI_CD_Project.settings \
     PYTHONPATH=/app
 
+# База лежить у /data  →  створимо каталог і дамо права
+RUN mkdir /data
+
 WORKDIR /app
 
 # ---------- Python‑залежності ----------
@@ -22,10 +25,10 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 RUN python manage.py collectstatic --noinput
 
-EXPOSE 8000
+# ---------- entrypoint + gunicorn ----------
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
+EXPOSE 8000
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "CI_CD_Project.wsgi:application", "--bind", "0.0.0.0:8000"]
-
