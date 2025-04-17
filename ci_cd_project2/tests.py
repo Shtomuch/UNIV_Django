@@ -1,18 +1,20 @@
 import os
 import uuid
-
 import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CI_CD_Project.settings")
+django.setup()
+
+
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from .models import Good, Order, Category
+from models import Good, Order, Category
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 User = get_user_model()
 
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CI_CD_Project.settings")
-django.setup()
 
 class CustomUserTests(TestCase):
     def test_create_user(self):

@@ -205,15 +205,30 @@ def cart_view(request):
     cart_items = []
     total = 0
 
-    # Формуємо список позицій з обчисленням проміжних сум
-    for good_id, quantity in cart.items():
-        good = get_object_or_404(Good, id=good_id)
+    for good_id_str, quantity in cart.items():
+        try:
+            gid = int(good_id_str)
+            good = Good.objects.get(id=gid)
+        except (ValueError, Good.DoesNotExist):
+            # або можна очистити такі записи з cart:
+            # del cart[good_id_str]
+            continue
+
         item_total = good.price * quantity
         total += item_total
-        cart_items.append({'good': good, 'quantity': quantity, 'item_total': item_total})
+        cart_items.append({
+            'good': good,
+            'quantity': quantity,
+            'item_total': item_total,
+        })
 
-    return render(request, 'cart.html', {'cart_items': cart_items, 'total': total})
+    # За бажанням: оновити сесію без "битих" записів
+    request.session['cart'] = {k: v for k, v in cart.items() if Good.objects.filter(id=k).exists()}
 
+    return render(request, 'cart.html', {
+        'cart_items': cart_items,
+        'total': total
+    })
 
 # ======================================================================
 #              Сповіщення про наявність товару та нотифікації
