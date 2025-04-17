@@ -1,0 +1,30 @@
+name: Django CI (Docker)
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # docker buildx -> multi‑platform кеш & —load
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build image (load into runner)
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          tags: local/test-image:latest
+          load: true         # ← образ буде доступний команді docker run
+
+      - name: Run migrations + tests
+        run: |
+          docker run --rm local/test-image:latest sh -c "
+            python manage.py migrate --noinput &&
+            python manage.py test --verbosity 2
+          "
