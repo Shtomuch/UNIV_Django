@@ -9,19 +9,19 @@
 #                         Імпорт необхідних пакетів
 # ======================================================================
 
-from django.shortcuts import render, redirect, get_object_or_404  # Шаблонні функції
-from django.contrib.auth import login, logout                     # Аутентифікація користувачів
-from django.contrib.auth.decorators import login_required         # Декоратор перевірки авторизації
-from django.contrib.auth.forms import PasswordChangeForm          # Стандартна форма зміни паролю
-from django.contrib.auth import update_session_auth_hash          # Зберігає сесію після зміни паролю
-from django.urls import reverse                                   # Генерація URL за іменем
-import unicodedata                                                # Нормалізація тексту
-from django.core.mail import send_mail                            # Відправка електронних листів
-from django.contrib import messages                               # flash‑повідомлення для користувача
-from django.contrib.auth import get_user_model                    # Отримання кастомної моделі User
+import unicodedata  # Нормалізація тексту
 
+from django.contrib import messages  # flash‑повідомлення для користувача
+from django.contrib.auth import login, logout  # Аутентифікація користувачів
+from django.contrib.auth import update_session_auth_hash  # Зберігає сесію після зміни паролю
+from django.contrib.auth.decorators import login_required  # Декоратор перевірки авторизації
+from django.contrib.auth.forms import PasswordChangeForm  # Стандартна форма зміни паролю
+from django.shortcuts import render, redirect, get_object_or_404  # Шаблонні функції
+from django.urls import reverse  # Генерація URL за іменем
+
+from .forms import *  # імпортуємо усі форми поточного застосунку
 from .models import *  # імпортуємо всі моделі поточного застосунку
-from .forms import *   # імпортуємо усі форми поточного застосунку
+
 
 # ----------------------------------------------------------------------
 # Допоміжна функція для нормалізації тексту: прибираємо діакритики та
@@ -32,6 +32,7 @@ def normalize_text(text: str) -> str:
     """Повертає нормалізований ASCII‑рядок без діакритиків та у нижньому регістрі."""
     return unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8').lower()
 
+
 # ======================================================================
 #                            View‑функції сайту
 # ======================================================================
@@ -41,8 +42,8 @@ def normalize_text(text: str) -> str:
 # ----------------------------------------------------------------------
 
 def home(request):
-    query = request.GET.get('q')                 # Параметр пошуку з рядка запиту
-    goods = Good.objects.all()                   # Витягуємо всі товари
+    query = request.GET.get('q')  # Параметр пошуку з рядка запиту
+    goods = Good.objects.all()  # Витягуємо всі товари
 
     if query:
         # Шукаємо збіг підрядка у назвах товарів (без врахування регістру)
@@ -50,6 +51,7 @@ def home(request):
         goods = [good for good in goods if normalized_query in good.name.lower()]
 
     return render(request, 'home.html', {'goods': goods})
+
 
 # ----------------------------------------------------------------------
 # Авторизація користувача (вхід).
@@ -60,12 +62,13 @@ def login_view(request):
         form = CustomAuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)                 # Логінимо користувача
-            return redirect('home')              # Переадресація на головну
+            login(request, user)  # Логінимо користувача
+            return redirect('home')  # Переадресація на головну
     else:
         form = CustomAuthenticationForm()
 
     return render(request, 'login.html', {'form': form})
+
 
 # ----------------------------------------------------------------------
 # Реєстрація нового користувача.
@@ -77,11 +80,12 @@ def register_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Акаунт створено успішно! Тепер увійдіть.')
-            return redirect('login')             # Після успішної реєстрації – на сторінку логіну
+            return redirect('login')  # Після успішної реєстрації – на сторінку логіну
     else:
         form = CustomUserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
 
 # ----------------------------------------------------------------------
 # Вихід користувача.
@@ -89,7 +93,8 @@ def register_view(request):
 
 def user_logout(request):
     logout(request)
-    return redirect('home')                      # Повертаємося на головну
+    return redirect('home')  # Повертаємося на головну
+
 
 # ----------------------------------------------------------------------
 # Профіль користувача: історія замовлень та базові дані.
@@ -100,6 +105,7 @@ def profile(request):
     user = request.user
     orders = Order.objects.filter(user=user).order_by('-created_at')
     return render(request, 'profile.html', {'user': user, 'orders': orders})
+
 
 # ----------------------------------------------------------------------
 # Редагування профілю.
@@ -117,6 +123,7 @@ def edit_profile(request):
         user_form = CustomUserChangeForm(instance=request.user)
 
     return render(request, 'edit_profile.html', {'user_form': user_form})
+
 
 # ----------------------------------------------------------------------
 # Зміна паролю авторизованим користувачем.
@@ -136,6 +143,7 @@ def change_password_view(request):
 
     return render(request, 'change_password.html', {'form': form})
 
+
 # ----------------------------------------------------------------------
 # Деталі одного замовлення.
 # ----------------------------------------------------------------------
@@ -145,6 +153,7 @@ def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     return render(request, 'order_detail.html', {'order': order})
 
+
 # ======================================================================
 #                       Робота з кошиком (Session Cart)
 # ======================================================================
@@ -153,10 +162,11 @@ def order_detail(request, order_id):
 
 def add_to_cart(request, good_id):
     good = get_object_or_404(Good, id=good_id)
-    cart = request.session.get('cart', {})          # Отримуємо кошик з сесії
+    cart = request.session.get('cart', {})  # Отримуємо кошик з сесії
     cart[str(good_id)] = cart.get(str(good_id), 0) + 1  # Збільшуємо кількість
-    request.session['cart'] = cart                  # Зберігаємо кошик у сесії
-    return redirect('cart')                         # Переходимо до кошика
+    request.session['cart'] = cart  # Зберігаємо кошик у сесії
+    return redirect('cart')  # Переходимо до кошика
+
 
 # Оновлення кількості конкретного товару (збільшити/зменшити).
 
@@ -177,14 +187,16 @@ def update_cart_quantity(request, good_id, action):
     request.session['cart'] = cart
     return redirect('cart')
 
+
 # Видалення товару з кошика повністю.
 
 def remove_from_cart(request, good_id):
     cart = request.session.get('cart', {})
     good_id = str(good_id)
-    cart.pop(good_id, None)                         # Безпечне видалення
+    cart.pop(good_id, None)  # Безпечне видалення
     request.session['cart'] = cart
     return redirect('cart')
+
 
 # Перегляд кошика.
 
@@ -202,11 +214,14 @@ def cart_view(request):
 
     return render(request, 'cart.html', {'cart_items': cart_items, 'total': total})
 
+
 # ======================================================================
 #              Сповіщення про наявність товару та нотифікації
 # ======================================================================
 
-from django.contrib.auth.decorators import login_required  # повторний імпорт (можна видалити, але залишено для читабельності)
+from django.contrib.auth.decorators import \
+    login_required  # повторний імпорт (можна видалити, але залишено для читабельності)
+
 
 # Підписка користувача на повідомлення про появу товару.
 
@@ -226,12 +241,14 @@ def notify_availability(request, good_id):
 
     return redirect('home')
 
+
 # Вивід усіх нотифікацій користувача.
 
 @login_required
 def notifications(request):
     user_notifications = request.user.notifications.all().order_by('-created_at')
     return render(request, 'notifications.html', {'notifications': user_notifications})
+
 
 # ======================================================================
 #                           Сторінка товару
@@ -240,6 +257,7 @@ def notifications(request):
 def good_detail(request, good_id):
     good = get_object_or_404(Good, id=good_id)
     return render(request, 'good_detail.html', {'good': good})
+
 
 # ======================================================================
 #                       Оформлення замовлення (checkout)
@@ -271,7 +289,7 @@ def order(request):
                 email=request.POST['email'],
                 phone_number=request.POST['phone_number'],
                 address=request.POST['address'],
-                password=CustomUser.objects.make_random_password()
+                password=None  # → Django поставить unusable password
             )
 
         # --------------------------------------------------------------
@@ -308,6 +326,7 @@ def order(request):
     total = _get_cart_total(cart)
     return render(request, 'order.html', {'cart_items': cart_items, 'total': total})
 
+
 # ----------------------------------------------------------------------
 # Допоміжні функції для розрахунку позицій та сум у кошику
 # ----------------------------------------------------------------------
@@ -325,6 +344,7 @@ def _get_cart_items(cart):
 
 def _get_cart_total(cart):
     return sum(get_object_or_404(Good, id=good_id).price * quantity for good_id, quantity in cart.items())
+
 
 # ======================================================================
 #                      Категорії та фільтрація товарів
