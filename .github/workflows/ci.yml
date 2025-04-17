@@ -1,11 +1,19 @@
-name: Django CI (Docker)
+name: Django CI + Publish (GHCR)
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
+    branches: [ "main" ]     # push у main → тести + пуш образу
+  pull_request:              # у PR — лише тести
+
+# права для GITHUB_TOKEN (потрібні для push у registry)
+permissions:
+  contents: read
+  packages: write
 
 jobs:
+# --------------------------------------------------------
+# 1) Build образ → migrate → test
+# --------------------------------------------------------
   test:
     runs-on: ubuntu-latest
 
@@ -19,7 +27,7 @@ jobs:
         with:
           context: .
           tags: local/test-image:latest
-          load: true          # ← образ доступний docker run
+          load: true            # образ доступний docker run
 
       - name: Run migrations + tests
         run: |
@@ -27,3 +35,31 @@ jobs:
             python manage.py migrate --noinput &&
             python manage.py test --verbosity 2
           "
+
+# --------------------------------------------------------
+# 2) Publish образ у GHCR (тільки push у main, після успішних тестів)
+# --------------------------------------------------------
+  publish:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/web:latest
+            ghcr.io/${{ github.repository }}/web:${{ github.sha }}
