@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-4">
+    <h1 class="mb-4">Ваші сповіщення</h1>
+    {% if notifications %}
+        <ul class="list-group">
+            {% for note in notifications %}
+            <li class="list-group-item">
+                <p>{{ note.message }}</p>
+                <small class="text-muted">{{ note.created_at|date:"d M Y H:i" }}</small>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">Сповіщень немає</div>
+    {% endif %}
+</div>
+{% endblock %}

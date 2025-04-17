@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Категорії{% endblock %}
+{% load static %}
+{% block content %}
+<style>
+    .category-image {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .card {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
+    }
+</style>
+
+<h2 class="mb-4">Категорії</h2>
+<div class="row">
+    {% for category in categories %}
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'category_goods' category.slug %}" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm">
+                    {% if category.photo %}
+                        <img src="{{ category.photo.url }}" class="card-img-top category-image" alt="{{ category.name }}">
+                    {% else %}
+                        <img src="{% static 'img/default_category.jpg' %}" class="card-img-top category-image" alt="{{ category.name }}">
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

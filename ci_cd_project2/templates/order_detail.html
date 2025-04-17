@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Деталі замовлення</h2>
+
+<!-- Виведення деталей замовлення -->
+<div class="order-info">
+    <p><strong>Дата замовлення:</strong> {{ order.created_at }}</p>
+    <p><strong>Статус:</strong> {{ order.status }}</p>
+</div>
+
+<h3>Товари в замовленні:</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Назва товару</th>
+            <th>Кількість</th>
+            <th>Ціна</th>
+            <th>Загальна ціна</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.good.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.good.price }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

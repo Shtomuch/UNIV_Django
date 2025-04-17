@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<style>
+
+ body {
+      background-image: url("{{ MEDIA_URL }}backgr.jpg");
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-attachment: fixed;
+  }
+
+  .card-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  .card {
+      transition: transform 0.3s ease-in-out;
+  }
+
+  .card:hover {
+      transform: scale(1.05);
+  }
+  .card-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+  .card {
+      transition: transform 0.3s ease-in-out;
+  }
+  .card:hover {
+      transform: scale(1.05);
+
+  }
+          body {
+            background-color: #f5f9fc;
+        }
+</style>
+
+<div class="container my-4">
+    {% if request.GET.q %}
+    <h2 class="mb-4">Результати пошуку для "<strong>{{ request.GET.q }}</strong>":</h2>
+{% else %}
+    <h1 class="mb-4">Доступні товари</h1>
+{% endif %}
+    {% if goods %}
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for good in goods %}
+        <div class="col">
+            <div class="card h-100">
+                <a href="{% url 'good_detail' good.id %}">
+                    <img src="{{ good.photo.url }}" class="card-img-top" alt="{{ good.name }}">
+                </a>
+                <div class="card-body">
+                    <h5 class="card-title" title="{{ good.name }}">{{ good.name }}</h5>
+                    <p class="card-text"><strong>{{ good.price }} грн</strong></p>
+                    {% if good.count > 0 %}
+                        <span class="badge bg-success">В наявності</span>
+                    {% else %}
+                        <span class="badge bg-danger">Немає в наявності</span>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    {% if good.count > 0 %}
+                        <form action="{% url 'add_to_cart' good.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary btn-sm w-100">Додати у кошик</button>
+                        </form>
+                    {% else %}
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-danger btn-sm w-100">
+                                Повідомити про наявність
+                            </a>
+                        {% elif user in good.subscribers.all %}
+                            <button type="button" class="btn btn-success btn-sm w-100" disabled>
+                                Ви підписались на товар
+                            </button>
+                        {% else %}
+                            <form action="{% url 'notify_availability' good.id %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                    Повідомити про наявність
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        Немає доступних товарів.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

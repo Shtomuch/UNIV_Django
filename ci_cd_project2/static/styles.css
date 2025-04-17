@@ -1,0 +1,123 @@
+/* Загальні стилі для body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: #f4f4f4; /* Легкий фон */
+}
+
+/* Стилі для верхньої панелі */
+header {
+    background-color: #2d3e50; /* Темний фон */
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тінь для ефекту */
+}
+
+/* Навігаційне меню */
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 25px; /* Відступи між елементами */
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: all 0.3s ease; /* Плавний перехід для hover */
+}
+
+nav ul li a:hover {
+    background-color: #ff6f61; /* Колір фону при наведенні */
+    color: white; /* Колір тексту при наведенні */
+    transform: translateY(-3px); /* Легкий підйом кнопки */
+}
+
+.login-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 40px;
+    font-size: 28px;
+}
+
+.login-form {
+    max-width: 400px;
+    margin: 30px auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.input-field:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+    outline: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background-color: #4a90e2;
+    color: #fff;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+    background-color: #357ab8;
+}
+
+.form-errors p {
+    color: #d8000c;
+    background-color: #ffe6e6;
+    padding: 10px;
+    border-left: 5px solid #d8000c;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+/* Стилі для мобільних пристроїв */
+@media screen and (max-width: 768px) {
+    nav ul {
+        padding: 10px 0;
+    }
+
+    nav ul li {
+        display: block;
+        margin: 10px 0;
+    }
+
+    nav ul li a {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+}
+

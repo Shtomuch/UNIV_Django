@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+    <style>
+        .profile-title {
+            text-align: left;
+            color: #2c3e50;
+            margin-top: 40px;
+            font-size: 28px;
+        }
+
+        .profile-form {
+            width: 600px;
+            margin-top: 30px;
+            margin-left: 0;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .profile-input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .profile-input-field:focus {
+            border-color: #4e88d6;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+            outline: none;
+        }
+
+        .profile-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4e88d6;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            background-color: #357ab8;
+        }
+
+        .form-errors p {
+            color: #d8000c;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-left: 5px solid #d8000c;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .change-password-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s ease;
+        }
+
+        .change-password-link:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+
+<h2 class="profile-title">Редагування профілю</h2>
+
+<form method="POST" class="profile-form">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="{{ user_form.username.id_for_label }}">Ім'я користувача</label>
+        <input type="text" name="{{ user_form.username.name }}" value="{{ user_form.username.value }}" class="profile-input-field">
+    </div>
+    <div class="form-group">
+        <label for="{{ user_form.phone_number.id_for_label }}">Телефон</label>
+        <input type="text" name="{{ user_form.phone_number.name }}" value="{{ user_form.phone_number.value }}" class="profile-input-field">
+    </div>
+    <div class="form-group">
+        <label for="{{ user_form.address.id_for_label }}">Адреса</label>
+        <input type="text" name="{{ user_form.address.name }}" value="{{ user_form.address.value }}" class="profile-input-field">
+    </div>
+
+    <button type="submit" class="profile-btn">Зберегти зміни</button>
+</form>
+
+    <a href="{% url 'change_password' %}" class="btn btn-secondary" style="margin-top: 10px;">Змінити пароль</a>
+{% endblock %}

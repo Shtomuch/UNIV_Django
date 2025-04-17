@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load custom_filters %}
+<head>
+    {% load static %}
+    <style>
+        .login-title {
+            text-align: center;
+            color: #2c3e50;
+            margin-top: 40px;
+            font-size: 28px;
+        }
+
+        .login-form {
+            max-width: 600px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .input-field:focus {
+            border-color: #4e88d6;
+            box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4e88d6;
+            color: #fff;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #357ab8;
+        }
+
+        .form-errors p {
+            color: #d8000c;
+            background-color: #ffe6e6;
+            padding: 10px;
+            border-left: 5px solid #d8000c;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<h2 class="login-title">Вхід до акаунту</h2>
+<form method="post" class="login-form" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="form-group">
+        <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        {{ form.username|add_class:"input-field" }}
+        {{ form.username.errors }}
+    </div>
+
+    <div class="form-group">
+        <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        {{ form.password|add_class:"input-field" }}
+        {{ form.password.errors }}
+    </div>
+
+    <button type="submit" class="login-btn">Увійти</button>
+
+    <div style="text-align: center; margin-top: 15px;">
+        <a href="{% url 'register' %}" class="login-btn"
+           style="background-color: #6c757d; margin-top: 15px; text-decoration: none; display: block; width: 100%; padding: 12px;">
+            Створити акаунт
+        </a>
+    </div>
+</form>
+{% endblock %}

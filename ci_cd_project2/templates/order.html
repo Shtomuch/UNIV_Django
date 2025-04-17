@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container my-4">
+    <h2>Оформлення замовлення</h2>
+    <div class="row">
+        <!-- Ліва колонка: форма -->
+        <div class="col-md-6">
+            <form method="post">
+                {% csrf_token %}
+                {% if not user.is_authenticated %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="mb-3">
+                        <label>Ім’я</label>
+                        <input type="text" name="username" class="form-control" required value="{{ form_data.username|default_if_none:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Email</label>
+                        <input type="email" name="email" class="form-control" required value="{{ form_data.email|default_if_none:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Телефон</label>
+                        <input type="text" name="phone_number" class="form-control" required value="{{ form_data.phone_number|default_if_none:'' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label>Адреса</label>
+                        <textarea name="address" class="form-control" required>{{ form_data.address|default_if_none:'' }}</textarea>
+                    </div>
+                {% else %}
+                    <div class="mb-3"><strong>Ім’я:</strong> {{ user.username }}</div>
+                    <div class="mb-3"><strong>Email:</strong> {{ user.email }}</div>
+                    <div class="mb-3"><strong>Телефон:</strong> {{ user.phone_number }}</div>
+                    <div class="mb-3"><strong>Адреса:</strong> {{ user.address }}</div>
+                {% endif %}
+                <button type="submit" class="btn btn-primary">Підтвердити замовлення</button>
+            </form>
+        </div>
+
+        <!-- Права колонка: товари -->
+        <div class="col-md-6">
+            <h4>Ваше замовлення</h4>
+            {% if cart_items %}
+                <ul class="list-group mb-3">
+                    {% for item in cart_items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ item.good.name }}</strong><br>
+                            Кількість: {{ item.quantity }}
+                        </div>
+                        <span>{{ item.item_total }} грн</span>
+                    </li>
+                    {% endfor %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Загальна сума:</strong>
+                        <strong>{{ total }} грн</strong>
+                    </li>
+                </ul>
+            {% else %}
+                <p>Кошик порожній.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

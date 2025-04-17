@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Особистий кабінет</h2>
+
+<!-- Виведення інформації про користувача -->
+<div class="user-info">
+    <p><strong>Ім'я:</strong> {{ user.username }}</p>
+    <p><strong>Телефон:</strong> {{ user.phone_number }}</p>
+    <p><strong>Адреса:</strong> {{ user.address }}</p>
+
+    <!-- Кнопка для зміни даних -->
+    <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Змінити дані</a>
+</div>
+
+<!-- Історія замовлень -->
+<div class="orders-history">
+    <h3>Історія замовлень</h3>
+    {% if orders %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Дата замовлення</th>
+                    <th>Статус</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td>{{ order.created_at }}</td>
+                        <td>{{ order.status }}</td>
+                        <td>
+                            <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">Переглянути</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>У вас немає замовлень.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

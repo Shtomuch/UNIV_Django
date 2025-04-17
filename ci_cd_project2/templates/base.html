@@ -1,0 +1,80 @@
+{% load notifications_tags %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Super Shop{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">Super Shop ☄️</a>
+        <li class="nav-item">
+    <a href="{% url 'category_list' %}" style="color: white; margin-right: 45px; text-decoration: none;" >Категорії</a>
+</li>
+
+
+            <form method="get" action="{% url 'home' %}" class="d-flex me-auto my-2 my-lg-0 w-20">
+                <input type="text" name="q" class="form-control me-2" placeholder="Пошук товару..." value="{{ request.GET.q }}">
+                <button class="btn btn-outline-primary" type="submit">Пошук</button>
+            </form>
+
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Перемикач навігації">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-2">
+                        <a href="{% url 'cart' %}" class="btn btn-outline-primary">🛒 Кошик</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown me-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Привіт, {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Особистий кабінет</a></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'notifications' %}">
+                                        Сповіщення
+                                        {% new_notifications_count as new_count %}
+                                        {% if new_count %}
+                                            <span class="badge bg-danger ms-1">{{ new_count }}</span>
+                                        {% endif %}
+                                    </a>
+
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Вихід</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{% url 'login' %}">Вхід</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Реєстрація</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<div class="container py-4">
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
