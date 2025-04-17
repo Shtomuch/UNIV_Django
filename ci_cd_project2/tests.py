@@ -90,3 +90,48 @@ class ViewTests(TestCase):
         })
         self.assertEqual(response.status_code, 302)
 
+    def test_register_view(self):
+        response = self.client.post(reverse('register'), {
+            'username': 'newuser',
+            'email': 'email@example.com',
+            'password1': 'StrongPassword123',
+            'password2': 'StrongPassword123',
+        })
+        if response.status_code == 200:
+            print(response.context['form'].errors)  # діагностика
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_to_cart(self):
+        response = self.client.get(reverse('add_to_cart', args=[self.good.id]))
+        self.assertEqual(response.status_code, 302)
+        session = self.client.session
+        self.assertIn(str(self.good.id), session.get('cart', {}))
+
+    def test_cart_view(self):
+        session = self.client.session
+        session['cart'] = {str(self.good.id): 2}
+        session.save()
+
+        response = self.client.get(reverse('cart'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.good.name)
+
+    def test_notify_availability_requires_login(self):
+        response = self.client.get(reverse('notify_availability', args=[self.good.id]))
+        self.assertRedirects(response, f"{reverse('login')}?next={reverse('notify_availability', args=[self.good.id])}")
+
+    def test_notify_availability_logged_in(self):
+        self.client.login(username='testuser', password='testpass')
+        response = self.client.get(reverse('notify_availability', args=[self.good.id]))
+        self.assertRedirects(response, reverse('home'))
+        self.assertIn(self.user, self.good.subscribers.all())
+
+    def test_order_get_with_items(self):
+        session = self.client.session
+        session['cart'] = {str(self.good.id): 1}
+        session.save()
+
+        response = self.client.get(reverse('order'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'order.html')
+
