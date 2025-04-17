@@ -67,3 +67,19 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.get_full_name() + " " + str(self.created_at)
+
+# Позиції в замовленні
+class OrderItem(models.Model):
+    quantity = models.PositiveIntegerField()
+    good = models.ForeignKey(Good, on_delete=models.CASCADE, related_name='order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+
+    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def total_price(self):
+        return self.good.price * self.quantity
+
+    def __str__(self):
+        return self.good.name + " " + str(self.quantity)
