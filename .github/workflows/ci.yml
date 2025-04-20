@@ -23,10 +23,10 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run migrations and tests
+      - name: Run tests
         run: |
-          python manage.py migrate --noinput
           python manage.py test
+  
 
   deploy-to-render:
     needs: build-and-test
