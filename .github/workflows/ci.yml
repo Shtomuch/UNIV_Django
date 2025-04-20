@@ -9,7 +9,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    # підтягуємо з GitHub Secrets параметри підключення до БД
     env:
       DB_NAME:     ${{ secrets.DB_NAME }}
       DB_USER:     ${{ secrets.DB_USER }}
@@ -19,19 +18,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
+      - name: Terminate lingering test DB connections
         run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
+          psql "postgres://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/postgres" \
+            -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='test_${{ secrets.DB_NAME }}' AND pid <> pg_backend_pid();"
 
       - name: Run tests
-        run: |
-          python manage.py test
+        run: python manage.py test
+
 
   deploy-to-render:
     needs: build-and-test
