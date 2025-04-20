@@ -149,3 +149,4 @@ TEMPLATES[0]['DIRS'] = [BASE_DIR / 'ci_cd_project2' / 'templates']  # або а�
 STATICFILES_STORAGE = (
     'whitenoise.storage.CompressedManifestStaticFilesStorage'
 )
+DATABASES['default']['CONN_MAX_AGE'] = 0
