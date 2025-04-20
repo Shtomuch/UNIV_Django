@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   web:
-    image: ghcr.io/shtomuch/univ_django-web:latest   # ← готовий образ
+    image: ghcr.io/shtomuch/univ_django-web:latest
     platform: linux/amd64
     restart: unless-stopped
 
