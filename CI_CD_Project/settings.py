@@ -81,15 +81,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'CI_CD_Project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 import environ
-from pathlib import Path
 
+environ.Env.read_env('./.env')
 env = environ.Env()
-environ.Env.read_env()
 
-# Налаштування бази даних
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
