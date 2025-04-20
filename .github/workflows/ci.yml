@@ -9,9 +9,15 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
+    # підтягуємо з GitHub Secrets параметри підключення до БД
+    env:
+      DB_NAME:     ${{ secrets.DB_NAME }}
+      DB_USER:     ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_HOST:     ${{ secrets.DB_HOST }}
+      DB_PORT:     ${{ secrets.DB_PORT }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -26,16 +32,16 @@ jobs:
       - name: Run tests
         run: |
           python manage.py test
-  
 
   deploy-to-render:
     needs: build-and-test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-
     steps:
+      - uses: actions/checkout@v3
+
       - name: Deploy to Render
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
           service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
+          api-key:    ${{ secrets.RENDER_API_KEY }}
