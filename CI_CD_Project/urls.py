@@ -8,6 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ci_cd_project2.urls')),  # ← змінити на назву твого додатку
     path('health/', lambda request: HttpResponse("OK")),
+    path('files/', include('db_file_storage.urls')),
 ]
 
 # для медіа-файлів

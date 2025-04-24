@@ -40,7 +40,7 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-
+    'db_file_storage',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ci_cd_project2',
 ]
+DEFAULT_FILE_STORAGE = 'db_file_storage.storage.DatabaseFileStorage'
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
